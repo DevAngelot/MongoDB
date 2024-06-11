@@ -1,0 +1,126 @@
+Les commandes de base de MongoSH dans MongoDB
+
+La commande show dbs(databases) permet d'afficher la liste de base de données
+la commande use database permet de creer une base de donnée
+la commande db permet de voir sur quelle base de donner on est
+la commande db.createCollection("personne") permet de creer une collection nommée personne
+la commande db.collection.drop permet de supprimer une collection
+la commande db.collection.find() permet d'afficher la liste de documents dans une colection
+la commande db.personne.insertMany([{"nom" : "MPATA","postnom":"katawandja","prenom":"angelot"},{"nom": "kiese","postnom":"maksilua","prenom":"caleb"}]) cette commande permet d'ajouter plusieurs documents dans une collection
+la commande db.personne.insertOne({"nom": "Batupe", "postnom": "kasongo","prenom": "samuel"}) permet d'ajouter un document dans une collection
+la commande db.personne.updateOne({"nom": "Batupe"}, {$set : {"nom": "batupe"}}) permet de mettre à jour un document(Modification)
+la commande db.personne.find({"prenom" : "mariam"}) permet de filter une requete c.a.d il va chercher toutes les personnes dans le document dont leur noms est mariam
+la commande db.personne.find({"sexe" : "F"}) permet de chercher toute les personne dont leur sexe sont F
+la commmande db.personne.deleteOne({"sexe" : "f"}) permet de supprimer un document selon le critère passé
+la commande db.personne.deleteMany({"prenom" : "christivie"}) permet de suprimer plusieurs documents selon le critère passé
+la commande db.personne.deleteMany() permet de supprimer toutes les documents dans une colection
+la commande db.personne.find({"sexe" : {"$ne" : "f"}}) permet de recherche toutes les personnes dont sexe n'est pas égal f
+la commande db.personne.find({"age" : {"$lt" : 20}}) permet d'afficher toutes les personnes dont leurs age sont inférieur à 20ans  (lower)
+la commande db.personne.find({"age" : {"$lte" : 20}}) permet d'afficher toutes les personnes dont leurs age sont inférieur ou égal à 20ans
+la commande db.personne.find({"age" : {"$gt" : 20}}) permet d'afficher toutes les personnes dont leurs age sont supérieurs à 20ans
+la commande db.personne.find({"age" : {"$gte" : 20}}) permet d'afficher toutes les personnes dont leurs age sont supérieurs ou égal à 20ans
+la commande db.personne.find({"age" : 20}) permet d'afficher toutes les personnes dont leurs age sont égals à 20
+la commande db.personne.find({"age" : {"$gte" : 15, "lt" : 20}}) permet d'afficher toutes les personnes qui ont 15 à 20ans 
+la commande db.infos.find({"user_age" : {$not : {$gt : 20, $lt : 30}}}) permet d'afffciher toutes les personnes n'ont pas 15 à 20ans
+la commande db.infos.find({"user_age" : 17, user_country:'France'}) permet d'affciher toutes les personnes qui ont 17 ans et qui habite en France
+la commande db.infos.find({$or : [{user_age : 17, user_country:'France'}]}) permet d'afficher toutes les personnes qui ont 17 ans ou qui habite en france
+la commande db.infos.find({user_age : {$in : [17,22,30,40]}}) permet d'afficher toutes les personnes qui ont 17,22,30,40ans 
+la commande db.infos.find({user_age : {$nin : [17,22,30,40]}}) c'est l'inverse de la commande précendente lui il va affcher toutes les personnes qui n'ont pas 17,22,30,40
+la commande db.infos.find({user_age : {$exists : 0}}) permet d'afficher toutes les personnes dont l'age n'existe pas(qui n'ont pas d'age) 
+la commande db.infos.find({user_age : {$exists : 1}}) permet d'afficher toutes les personnes dont l'age exits(qui ont age)
+la commande db.infos.find({user_age : {$in : [17,22,30,40]}},{user_name : 1}) pernet d'afficher le nom de toutes les personnes qui ont 17,22,30,40ans
+la commande db.infos.find({user_age : {$nin : [17,22,30,40]}},{user_name : 1, _id : 0}) pernet d'afficher le nom de toutes les personnes qui n'ont pas  17,22,30,40ans et enleve aussi l'identifiant
+la commande db.infos.find({}, {user_name : 1, user_country : 1, _id : 0}) permet d'afficher le user_name et user_country des toutes les personnes dans une collection
+
+
+EXERCICE 
+
+Ici dans cette exercice on va comment inserer un document qui contiendra les objets et le tableaux au meme moment et on va voir aussi comment décomposer la requete en MongoDB 
+
+example :
+Dans cette exercice o va voir comment filtrer les requetes d'un attribut à un sous attribut(dans l'objet)
+ 
+db.utilisateur.insertMany([
+    { "nom" : "Bob", "naissance" : new Date(1979, 5, 18), "parametres":{"taille" : 175, "poids" :80}, "couleurs": ["rouge","blanc"], "nombres" :[5,3,8] } ,
+    { "nom" : "Kim", "naissance" : new Date(1985, 12, 22), "parametres":{"taille" : 165, "poids" :75}, "couleurs": ["blanc","rouge"], "nombres" :[15,22,66] },
+    { "nom" : "Jack", "naissance" : new Date(1989, 12, 11), "parametres":{"taille" : 185, "poids" :92}, "couleurs": ["rouge"], "nombres" :[7,3,81] },
+    { "nom" : "Alison", "naissance" : new Date(1975, 3, 5), "parametres":{"taille" : 175, "poids" :70}, "couleurs": ["vert", "blanc"], "nombres" :[22,56,18] },
+    { "nom" : "John", "naissance" : new Date(1995, 11, 7), "parametres":{"taille" : 173, "poids" :71}, "couleurs": ["gris","vert"], "nombres" :[5,13,9] }
+    ])
+
+la commande db.utilisateur.find({parametres: {taille : 173,poids : 71}}) permet d'afficher toutes les personnes qui ont la taille 173 et poids 71 ici on a décomposer la requete
+la commande db.utilisateur.find({"parametres.taille" : {$lt: 175}}) permet d'afficher toutes les personnes qui ont la taille inférieur à 175
+la commande db.utilisateur.find({"parametres.taille" : {$gt: 175}}) permet d'afficher toutes les personnes qui ont la taille supérieur à 175
+la commande db.utilisateur.find({"parametres.taille" : {$gt : 150 , $lt: 200}}) permet d'afficher toutes les personnes qui ont la taille de 150 à 200
+la commande db.utilisateur.find({"parametres.taille" : {$gt : 175 , $lt: 200}}).count() permet compter toutes les personnes qui ont la taille de 150 à 200
+la commande db.utilisateur.find().sort({nom : 1}) permet de trier les noms en ordre alphabétique ascendant
+la commande db.utilisateur.find().sort({nom : -1}) permet de trier les noms en ordre alphabétique descendant
+la commande db.utilisateur.find().limit(2).sort({nom : 1}) permet de limiter une requete et trier en ordre ascendant  
+la commande db.utilisateur.find().skip(2).sort({nom : 1}) permet de sauter les deux prémiers enregestrements
+ 
+ 
+LES FONCTIONS D'AGGREGATIONS
+
+mongodb://localhost:27017/
+l'aggregation permet de regrouper les données et de travailler sur plusieurs documents
+
+exemple :
+var p = [{$sort : {user_name : 1}}] c'est une variable(pipeline) déclaré qui contient une foction de trie pour la propriété user_name et le mettre en ascendant
+db.infos.aggregate(p) on utilise la fonction aggregate() pour faire l'appel de pipeline et afficher
+var p = [{ $group : { _id : "$user_country", "habitant par pays" : {$sum : 1}}}, {$sort : {user_name : 1}}] ici on a créer un aggregation pour regrouper tous et compter le nombre des personnes par pays
+var p = [{ $group : { _id : "$user_country", "habitant_par_pays" : {$sum : 1}}}, {$sort : {"habitant_par_pays" : -1}}] ici on a grouper,compter et trier par le pays qui a plus d'habitants
+var p = [{ $group : { _id : "$user_country", "habitant_par_pays" : {$sum : "$user_age"}}}, {$sort : {"habitant_par_pays" : -1}}] ici je fais la sommes de leurs age par pays
+var p = [{ $group : { _id : "$user_country", "habitant_par_pays" : {$avg : "$user_age"}}}, {$sort : {"habitant_par_pays" : -1}}] ici ça cous permet d'avoir l'age moyen des personnes grouper par pays 
+
+la commande find() est qui équivalent à select * from en sql
+
+
+LES VUES 
+
+la syntaxe pour creer une vue en mongoDB : 
+db.createView(
+   "<nom_de_la_vue>",          // Nom de la vue à créer
+   "<nom_de_la_collection>",   // Nom de la collection source
+   [<pipeline>]                // Pipeline d'agrégation
+)
+exemple : 
+db.createView(
+   "highValueOrders",
+   "orders",
+   [
+      {
+         $match: { amount: { $gt: 1000 } }
+      }
+   ]
+)
+
+exemple 2:
+
+var p = [{$match : {sexe : "f"}}]
+db.createView("les_personnes_sexe_f","personne",p)
+[<pipeline>] : Un tableau de pipelines d'agrégation. Cela permet de filtrer, projeter, regrouper et transformer les documents de la collection source.
+
+LES OPERATEURS
+
+: égal
+$lt = inférieur
+$lte = inférieur ou égal 
+$gt = supérieur 
+$gte = supérieur ou égal
+$ne = différent de 
+$and = Et
+$or = Ou
+$in = est dans
+$nin = n'est pas dans
+$not = Non
+$exits = Existe
+$all = tous
+
+LES CURSEURS
+
+max()
+limit()
+sort()
+min()
+count()
+skip()
